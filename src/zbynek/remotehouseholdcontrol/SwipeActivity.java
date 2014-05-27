@@ -71,9 +71,9 @@ public class SwipeActivity extends FragmentActivity {
 		public Fragment getItem(int position) {
 			switch (position) {
 			case 0:
-				return new TemperatureFragment();
+				return new TemperatureFragment();			
 			case 1:
-				return new StatusFragment();			
+				return new StatusFragment();
 			case 2:
 				return new  ControlFragment();			
 			case 3:

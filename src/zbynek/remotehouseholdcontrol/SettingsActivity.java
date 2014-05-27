@@ -4,7 +4,10 @@ import zbynek.remotehouseholdcontrol.nettools.ConnectionCredentialsManager;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.EditText;
+import android.widget.Toast;
 
 public class SettingsActivity extends Activity {
 
@@ -26,8 +29,25 @@ public class SettingsActivity extends Activity {
 		dir = ((EditText)findViewById(R.id.editText3));
 		username = ((EditText)findViewById(R.id.editText4));
 		password = ((EditText)findViewById(R.id.editText5));
-		
 		credManager = new ConnectionCredentialsManager(this);
+
+		findViewById(R.id.btn_Save).setOnClickListener(new OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        credManager.saveCredentials(domain.getText().toString(),
+          port.getText().toString(), dir.getText().toString(), 
+          username.getText().toString(), password.getText().toString());
+        Toast.makeText(SettingsActivity.this, R.string.settings_saved,Toast.LENGTH_LONG).show();
+        finish();
+      }
+    });
+		
+		findViewById(R.id.btn_Cancel).setOnClickListener(new OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        finish();
+      }
+    });
 	}
 	
 
@@ -48,16 +68,4 @@ public class SettingsActivity extends Activity {
 		username.setText(credManager.getUsername());
 		password.setText(credManager.getPassword());
 	}
-
-	
-	@Override
-	public void onPause() {
-		super.onPause();
-		credManager.saveCredentials(domain.getText().toString(), 
-				port.getText().toString(), 
-				dir.getText().toString(), 
-				username.getText().toString(), 
-				password.getText().toString());
-	}
-
 }

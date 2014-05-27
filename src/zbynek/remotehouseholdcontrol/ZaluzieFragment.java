@@ -1,140 +1,165 @@
 package zbynek.remotehouseholdcontrol;
 
-import java.util.ArrayList;  
-import java.util.List;  
-   
-import android.content.res.Configuration;  
-import android.os.Bundle;  
-import android.support.v4.app.Fragment;  
-import android.support.v4.app.FragmentManager;  
-import android.support.v4.app.FragmentManager.OnBackStackChangedListener;  
-import android.support.v4.app.FragmentTransaction;  
-import android.view.LayoutInflater;  
-import android.view.View;  
-import android.view.ViewGroup;  
-import android.widget.AdapterView;  
-import android.widget.AdapterView.OnItemClickListener;  
-import android.widget.ArrayAdapter;  
-import android.widget.ListView;  
-import android.widget.Toast;  
+import java.io.IOException;
+
+import zbynek.remotehouseholdcontrol.nettools.CgiScriptCaller;
+import zbynek.remotehouseholdcontrol.nettools.ConnectionCredentialsManager;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.ToggleButton;
+import android.widget.Button;
+import android.widget.Switch;
+import android.widget.Toast;
 
 public class ZaluzieFragment extends Fragment {
+
+	private ConnectionCredentialsManager cm;
+//	private ToggleButton heatingButton;
+	private Switch heatingButton;
+	private Switch SprinklerButton;
+	private Button PulseButton;
 	
-	  private List<String> mDataSourceList = new ArrayList<String>();  
-	  private List<FragmentTransaction> mBackStackList = new ArrayList<FragmentTransaction>();  
-	   
-	   
-	    @Override 
-	    public View onCreateView(LayoutInflater inflater, ViewGroup container,  
-	            Bundle savedInstanceState) {  
-	        return inflater.inflate(R.layout.fragment_list_layout, container, false);  
-	    }  
-	       
-	       
-	    @Override 
-	    public void onActivityCreated(Bundle savedInstanceState) {  
-	        super.onActivityCreated(savedInstanceState);  
-	           
-	        //add data to ListView  
-	        for(int i=0, count=20; i<count; i++){  
-	            mDataSourceList.add("neco_cinsky" + i);  
-	        }  
-	           
-	         
-	        ListView listView = (ListView) getActivity().findViewById(R.id.fragment_list);  
-	        listView.setAdapter(new ArrayAdapter(getActivity(), android.R.layout.simple_list_item_1, mDataSourceList));  
-	           
-	        listView.setOnItemClickListener(new OnItemClickListener() {  
-	   
-	            @Override 
-	            public void onItemClick(AdapterView<?> parent, View view,  
-	                    int position, long id) {  
-	                //create a Fragment  
-	                Fragment detailFragment = new FragmentDetail();  
-	                   
-	               
-	                Bundle mBundle = new Bundle();  
-	                mBundle.putString("arg", mDataSourceList.get(position));  
-	                detailFragment.setArguments(mBundle);  
-	                   
-	                final FragmentManager fragmentManager = getActivity().getSupportFragmentManager();  
-	                final FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();  
-	                   
-	                //check if the device is landscape or portrait 
-	                Configuration configuration = getActivity().getResources().getConfiguration();  
-	                int ori = configuration.orientation;  
-	                   
-	                fragmentTransaction.replace(R.id.detail_container, detailFragment);  
-	                   
-	                if(ori == configuration.ORIENTATION_PORTRAIT){  
-	                    fragmentTransaction.addToBackStack(null);  
-	                }  
-	                   
-	                fragmentTransaction.commit();  
-	                   
-	                   
-	            }  
-	        });  
-	           
-	    }  
-	       
-	    /** 
-	     *  
-	     * @param msg 
-	     */ 
-	    private void showTost(String msg){  
-	        Toast.makeText(getActivity(), msg, Toast.LENGTH_LONG).show();  
-	    }  
-	       
-    private String[][] StatesAndCapitals =
-		{{"Alabama","Montgomery"},
-		{"Alaska","Juneau"},
-		{"Arizona","Phoenix"},
-		{"Arkansas","Little Rock"},
-		{"California","Sacramento"},
-		{"Colorado","Denver"},
-		{"Connecticut","Hartford"},
-		{"Delaware","Dover"},
-		{"Florida","Tallahassee"},
-		{"Georgia","Atlanta"},
-		{"Hawaii","Honolulu"},
-		{"Idaho","Boise"},
-		{"Illinois","Springfield"},
-		{"Indiana","Indianapolis"},
-		{"Iowa","Des Moines"},
-		{"Kansas","Topeka"},
-		{"Kentucky","Frankfort"},
-		{"Louisiana","Baton Rouge"},
-		{"Maine","Augusta"},
-		{"Maryland","Annapolis"},
-		{"Massachusetts","Boston"},
-		{"Michigan","Lansing"},
-		{"Minnesota","Saint Paul"},
-		{"Mississippi","Jackson"},
-		{"Missouri","Jefferson City"},
-		{"Montana","Helena"},
-		{"Nebraska","Lincoln"},
-		{"Nevada","Carson City"},
-		{"New Hampshire","Concord"},
-		{"New Jersey","Trenton"},
-		{"New Mexico","Santa Fe"},
-		{"New York","Albany"},
-		{"North Carolina","Raleigh"},
-		{"North Dakota","Bismarck"},
-		{"Ohio","Columbus"},
-		{"Oklahoma","Oklahoma City"},
-		{"Oregon","Salem"},
-		{"Pennsylvania","Harrisburg"},
-		{"Rhode Island","Providence"},
-		{"South Carolina","Columbia"},
-		{"South Dakota","Pierre"},
-		{"Tennessee","Nashville"},
-		{"Texas","Austin"},
-		{"Utah","Salt Lake City"},
-		{"Vermont","Montpelier"},
-		{"Virginia","Richmond"},
-		{"Washington","Olympia"},
-		{"West Virginia","Charleston"},
-		{"Wisconsin","Madison"},
-		{"Wyoming","Cheyenne"}};
-}
+	/*-----------------------------------------
+	@Override 
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,  
+            Bundle savedInstanceState) {  
+        return inflater.inflate(R.layout.fragment_list_layout, container, false);  
+    }  
+       
+	*/
+	
+	
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		
+		LinearLayout verticalLayout = new LinearLayout(getActivity());
+		verticalLayout.setOrientation(LinearLayout.VERTICAL);
+
+		cm = new ConnectionCredentialsManager(getActivity());
+		
+		LinearLayout layoutForHeating = new LinearLayout(getActivity());
+
+		//Heating button
+		heatingButton = new Switch(getActivity());
+		TextView heatingLabel = new TextView(getActivity());
+		heatingLabel.setText("Heating");
+		layoutForHeating.addView(heatingButton);
+		layoutForHeating.addView(heatingLabel);
+		
+		SprinklerButton = new Switch(getActivity());
+		TextView SprinklerLabel = new TextView(getActivity());
+		SprinklerLabel.setText("Heating");
+		layoutForHeating.addView(SprinklerButton);
+		layoutForHeating.addView(SprinklerLabel);
+		
+		verticalLayout.addView(layoutForHeating);
+		return verticalLayout;
+	}
+
+	
+	private OnCheckedChangeListener heatingButtonListener = new OnCheckedChangeListener() {
+		@Override
+
+		public void onCheckedChanged(final CompoundButton button, boolean isChecked) {
+
+			AsyncTask<Boolean, Void, Boolean> setHeatingStatusTask = new AsyncTask<Boolean, Void, Boolean>() {
+				@Override
+				protected Boolean doInBackground(Boolean ... params) {
+					boolean isChecked = params[0];
+					CgiScriptCaller scriptCaller = new CgiScriptCaller(cm);
+					boolean success;
+					try {
+						success = scriptCaller.callCGIScriptAndSetValue(isChecked);
+						if (!success) {throw new IOException("Script failed.");}
+					} catch (IOException e) {
+						return false;
+											}
+					return true;
+				}
+			};
+			boolean result;
+			try {
+				result = setHeatingStatusTask.execute(isChecked).get();
+			} catch (Exception e) { //collect all possible exceptions
+				Toast.makeText(getActivity(),"Exception setHesting", Toast.LENGTH_LONG).show();					
+				result = false;
+			}
+			if (!result) {
+				showError("chybka 1");
+
+				button.setChecked(!isChecked); //set previous state
+			}
+		}
+	};
+
+	
+	
+	@Override
+	public void onResume() {
+		super.onResume();
+		Toast.makeText(getActivity(), "ControlFragment", Toast.LENGTH_LONG).show();
+		
+		//load status of Heating
+		AsyncTask<Void, Void, Boolean> getHeatingStatusTask = new AsyncTask<Void, Void, Boolean>() {
+			@Override
+			protected Boolean doInBackground(Void ... params) {
+				CgiScriptCaller scriptCaller = new CgiScriptCaller(cm);
+				try {
+					return scriptCaller.callCGIScriptAndGetStatus();
+				} catch (IOException e) {
+
+					Toast.makeText(getActivity(),"Ahoj", Toast.LENGTH_LONG).show();					
+
+					return null;
+				
+					// TADY VYPSAT CHYBOVY KOD e
+				//	      System.out.println("Passed Name is :" + e ); 
+
+		//			  Toast.makeText(context, "Alarm worked", Toast.LENGTH_LONG).show();
+					  
+
+					  
+							}
+			}
+		};
+		try {
+			Boolean status = getHeatingStatusTask.execute().get();
+			if (status == null) {
+				showError("chyba 2");
+
+			} else {
+				heatingButton.setOnCheckedChangeListener(null);
+				heatingButton.setChecked(status);
+				heatingButton.setOnCheckedChangeListener(heatingButtonListener);
+			}
+		} catch (Exception e) { //collect all possible exceptions
+			showError("chyba 3");
+		}
+	}
+	
+	private void showError( String chyba) {
+		AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
+		alertDialog.setMessage("Problem... showError" + chyba);
+		alertDialog.setButton("OK",new OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				//do nothing
+			}
+		});
+		alertDialog.show();		
+	}
+	
+	
+}	
+

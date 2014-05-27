@@ -17,4 +17,14 @@
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
 
+    <style name="styleNameTlacitka" parent="android:Widget.Holo.Light.Button">
+        <item name="android:layout_margin">10dp</item>
+        <item name="android:minHeight">80dp</item>
+        <item name="android:minWidth">300dp</item>
+        <item name="android:shadowColor">@color/button_shadow</item>
+        <item name="android:textColor">@color/button_color</item>
+        <item name="android:textSize">30sp</item>
+     
+    </style>
+
 </resources>

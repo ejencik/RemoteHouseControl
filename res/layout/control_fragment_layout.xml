@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <Button
+            android:id="@+id/button1"
+            style="@style/styleNameTlacitka"
+            android:layout_width="202dp"
+            android:layout_height="46dp"
+            android:layout_gravity="center"
+            android:layout_margin="10dp"
+            android:minHeight="80dp"
+            android:minWidth="300dp"
+            android:shadowColor="@color/button_shadow"
+            android:textColor="@color/button_color"
+            android:textSize="20sp" 
+            android:text="Vstupni branka" 
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <Button
+            android:id="@+id/button2"
+            style="@style/styleNameTlacitka"
+            android:layout_width="202dp"
+            android:layout_height="46dp"
+            android:layout_gravity="center"
+            android:text="Vjezdová brána" 
+            android:textSize="20sp" 
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <Button
+            android:id="@+id/button3"
+            style="@style/styleNameTlacitka"
+            android:layout_width="202dp"
+            android:layout_height="46dp"
+            android:layout_gravity="center"
+            android:layout_margin="10dp"
+            android:minHeight="80dp"
+            android:minWidth="300dp"
+            android:shadowColor="@color/button_shadow"
+            android:text="Garáž"
+            android:textColor="@color/button_color"
+            android:textSize="20sp" 
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="vertical" >
+
+        <Switch
+            android:id="@+id/switch2"
+            android:layout_width="191dp"
+            android:layout_height="53dp"
+            android:layout_gravity="center"
+            android:switchMinWidth="80dp"
+            android:text="Zalévání"
+            android:textColor="#F7DF05"
+            android:textOff="Off"
+            android:textOn="On" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:orientation="vertical" >
+
+        <Switch
+            android:id="@+id/switch3"
+            android:layout_width="191dp"
+            android:layout_height="53dp"
+            android:layout_gravity="center"
+            android:switchMinWidth="80dp"
+            android:textColor="#F7DF05"
+            android:text="Osvětlení"
+            android:textOff="Off"
+            android:textOn="On" />
+    </LinearLayout>
+
+</LinearLayout>
